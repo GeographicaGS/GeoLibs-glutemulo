@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "glutemulo"
+version = "0.1.0"
+description = "A geo-data ingestor"
+authors = ["Pablo Caro Revuelta <pablo.caro@geographica.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+
+[tool.poetry.dev-dependencies]
+flask = "^1.0"
+pytest = "^4.4"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
