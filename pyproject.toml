@@ -9,6 +9,7 @@ python = "^3.6"
 kafka-python = "^1.4"
 fastavro = "^0.21.23"
 avro-python3 = "^1.8"
+redis = "^3.2"
 
 [tool.poetry.dev-dependencies]
 flask = "^1.0"
