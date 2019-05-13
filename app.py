@@ -2,6 +2,9 @@
 from flask import Flask
 from flask import request
 
+from kafka_producer import JsonKafka
+
+
 app = Flask(__name__)
 
 log = app.logger
@@ -11,11 +14,8 @@ VENUES = ['v1', 'v2']
 
 def process_data(source, data):
     log.info(source, data)
-    # if cfg.USE_REDIS_QUEUE:
-    #     return queue_observations(cmxjson, source)
-    # if cfg.USE_CELERY:
-    #     return import_observations.delay(cmxjson, source)
-    # import_observations(cmxjson, source)
+    productor = JsonKafka(bootstrap_servers="localhost:9092")
+    productor.produce(source, data)
 
 
 @app.route('/<venue>/', methods=['POST'])
