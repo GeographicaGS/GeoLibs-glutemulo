@@ -18,7 +18,7 @@ services:
       - redis
 
   postgis:
-    image: geographica/postgis:spry_sparrow
+    image: geographica/postgis:tasty_termite
     ports:
       - "5432:5432"
     volumes:
