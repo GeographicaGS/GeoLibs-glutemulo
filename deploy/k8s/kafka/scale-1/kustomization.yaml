@@ -1,0 +1,7 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+bases:
+  # https://github.com/kubernetes-sigs/kustomize/blob/master/docs/kustomization.yaml
+  - github.com/Yolean/kubernetes-kafka/variants/scale-1?ref=v6.0.1
+
