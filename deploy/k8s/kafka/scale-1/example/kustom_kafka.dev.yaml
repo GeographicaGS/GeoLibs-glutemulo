@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka
+spec:
+  selector:
+    matchLabels:
+      app: projectname-kafka
+  template:
+    metadata:
+      labels:
+        app: projectname-kafka
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: broker
+spec:
+  selector:
+    app: projectname-kafka
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bootstrap
+spec:
+  selector:
+    app: projectname-kafka

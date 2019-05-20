@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namePrefix: projectname-kafka-
+namespace: dev
+
+bases:
+  - git@github.com/GeographicaGS/glutemulo/deploy/k8s/kafka/scale-1?ref=master
+patchesStrategicMerge:
+  - kustom_kafka.dev.yaml
+patchesJson6902:
+  - target:
+      group: apps
+      version: v1
+      kind: StatefulSet
+      name: kafka
+    path: kafka-url-overrides.json
