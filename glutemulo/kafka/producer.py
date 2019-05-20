@@ -2,9 +2,9 @@ import json
 
 from kafka import KafkaProducer
 
-from avro_utils import FastAvroEncoder
-from errors import ProducerError, SerializerError, ValidationError
-from producer import Producer
+from .avro_utils import FastAvroEncoder
+from glutemulo.errors import ProducerError, SerializerError, ValidationError
+from glutemulo.producer import Producer
 
 
 class Kafka(Producer):
@@ -20,7 +20,6 @@ class Kafka(Producer):
 class JsonKafka(Kafka):
     def serialize(self, message):
         return json.dumps(message).encode("utf-8")
-
 
 
 class AvroKafka(Kafka):

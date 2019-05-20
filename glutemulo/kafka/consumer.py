@@ -4,8 +4,8 @@ import uuid
 
 from kafka import KafkaConsumer
 
-from avro_utils import FastAvroDecoder
-from errors import SerializerError
+from .avro_utils import FastAvroDecoder
+from glutemulo.errors import SerializerError
 
 
 class Kafka:
