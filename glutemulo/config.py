@@ -1,10 +1,46 @@
 from environs import Env
+from marshmallow.validate import OneOf
+import logging
 
 env = Env()
 
 with env.prefixed("GLUTEMULO_"):
     backend = env("BACKEND", default="carto")
-    config = {"backend": backend, "debug": env.bool("DEBUG", False)}
+    config = {
+        "backend": backend,
+        "debug": env.bool("DEBUG", False),
+        "log_level": getattr(
+            logging,
+            env.str(
+                "LOG_LEVEL",
+                logging.INFO,
+                validate=OneOf(
+                    "DEBUG INFO WARN ERROR".split(),
+                    error="LOG_LEVEL must be one of: {choices}",
+                ),
+            ),
+        ),
+    }
+
+    with env.prefixed("INGESTOR_"):
+        config.update(
+            {
+                "ingestor_topic": env("TOPIC", None),
+                "ingestor_bootstap_servers": env.list("BOOTSTRAP_SERVERS"),
+                "ingestor_group_id": env("GROUP_ID"),
+                "ingestor_wait_interval": env("WAIT_INTERVAL", 0),
+                "ingestor_table_ddl_content": env("TABLE_DLL_CONTENT", ""),
+                "ingestor_dataset": env("DATASET", ""),
+            }
+        )
+        with env.prefixed("DATASET_"):
+            config.update(
+                {
+                    "ingestor_dataset_columns": env.list("COLUMNS", []),
+                    "ingestor_dataset_ddl": env("DLL", ""),
+                    "ingestor_dataset_autocreate": env.bool("AUTOCREATE", False),
+                }
+            )
 
     if backend == "carto":
         with env.prefixed("CARTO_"):

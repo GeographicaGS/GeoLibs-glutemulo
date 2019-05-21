@@ -1,4 +1,4 @@
-from errors import SerializerError
+from glutemulo.errors import SerializerError
 
 
 class Producer:

@@ -3,7 +3,7 @@ import struct
 
 import fastavro
 
-from errors import ValidationError, SerializerError
+from glutemulo.errors import ValidationError, SerializerError
 
 
 class ContextStringIO(io.BytesIO):

@@ -2,17 +2,18 @@ import operator
 import time
 
 from carto.auth import APIKeyAuthClient
-from carto.sql import SQLClient, CopySQLClient
 from carto.exceptions import CartoException
+from carto.sql import CopySQLClient, SQLClient
 
-from ..config import cfg
-from ..logger import log
+from glutemulo.backend.sql import SQLBackend
+from glutemulo.config import config
+from glutemulo.logger import log
 
 
 def _get_auth_client():
-    log.info(f"Using {cfg.CARTO_ONPREMISES_URL}")
+    log.info(f"Using {config['carto_api_url']}")
     auth_client = APIKeyAuthClient(
-        api_key=cfg.CARTO_API_KEY, base_url=cfg.CARTO_ONPREMISES_URL
+        api_key=config["carto_api_key"], base_url=config["carto_api_url"]
     )
     return auth_client
 
@@ -40,11 +41,6 @@ def query(sql_query, parse_json=True, do_post=True, format=None, retries=5):
         return res["rows"]
 
     return res
-
-
-def init(dataset):
-    """Called on app start"""
-    create_table_if_not_exists(dataset, OBSERVATIONS_TABLE)
 
 
 def copy(tablename, rows, delimiter=",", quote='"'):
@@ -78,7 +74,7 @@ def rows_generator(rows, delimiter, quote):
         )
 
 
-def create_table_if_not_exists(tablename, table_definition, table_indexes, cartodbfy=True):
+def create_table_if_not_exists(tablename, table_definition, table_indexes="", cartodbfy=True):
     tables = map(
         operator.itemgetter("cdb_usertables"), query("SELECT CDB_UserTables()")
     )
@@ -95,3 +91,12 @@ def create_table_if_not_exists(tablename, table_definition, table_indexes, carto
     if cartodbfy:
         log.debug("Cartodbfing table")
         query(f"SELECT CDB_CartodbfyTable(current_schema, '{tablename}')")
+
+
+class CartoBackend(SQLBackend):
+
+    def copy(self, rows, delimiter=",", quote='"'):
+        return copy(self.table_name, rows, delimiter=delimiter, quote=quote)
+
+    def create_table_if_not_exists(self, tablename, table_definition, table_indexes=""):
+        return create_table_if_not_exists(tablename, table_definition, table_indexes)

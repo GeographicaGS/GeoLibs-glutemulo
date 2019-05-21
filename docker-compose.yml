@@ -130,5 +130,17 @@ services:
     depends_on:
       - zoo1
 
+  gluto:
+    build:
+      context: .
+      args:
+          ENVIRONMENT: local
+    env_file:
+      - .env
+    # volumes:
+    #   - ./:/usr/src/app
+    # command: python -m glutemulo.gluto
+    restart: unless-stopped
+
 volumes:
   db-data:

@@ -6,8 +6,8 @@ from string import ascii_lowercase
 
 import redis
 
-from kafka_consumer import JsonKafka as Consumer
-from kafka_producer import JsonKafka as Producer
+from glutemulo.kafka.consumer import JsonKafka as Consumer
+from glutemulo.kafka.producer import JsonKafka as Producer
 
 
 def producer():

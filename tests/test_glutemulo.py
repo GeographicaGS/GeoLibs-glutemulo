@@ -1,6 +1,7 @@
-import kafka_producer
-import avro_utils
 import pytest
+
+from glutemulo.kafka import avro_utils
+from glutemulo.kafka import producer as kafka_producer
 
 
 def test_context_string():
@@ -38,7 +39,7 @@ def test_fast_avro_utils_bad_data():
 
 
 def test_avro_kafka_produder(mocker):
-    mocker.patch("kafka_producer.KafkaProducer")
+    mocker.patch("glutemulo.kafka.producer.KafkaProducer")
 
     producer = kafka_producer.AvroKafka(
         SCHEMA, SCHEMA_ID, bootstrap_servers="localhost:9092"
@@ -53,7 +54,7 @@ def test_avro_kafka_produder(mocker):
 
 
 def test_json_kafka_produder(mocker):
-    mocker.patch("kafka_producer.KafkaProducer")
+    mocker.patch("glutemulo.kafka.producer.KafkaProducer")
     producer = kafka_producer.JsonKafka("un-topic", bootstrap_servers="localhost:9092")
     producer.produce(
         "json-topic", {"number1": 1, "number2": 1.3, "name": f"Name for 1"}

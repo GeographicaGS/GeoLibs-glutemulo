@@ -1,11 +1,11 @@
 import time
 
-from errors import SerializerError
+from glutemulo.errors import SerializerError
 
 
 class Consumer:
 
-    def consume(self, wait_interval=1):
+    def consume(self, wait_interval=0):
         while True:
             for msg in self._consumer_generator():
                 yield self.deserialize(msg)

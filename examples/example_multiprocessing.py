@@ -4,8 +4,8 @@ from string import ascii_lowercase
 import time
 
 
-from kafka_producer import JsonKafka as Producer
-from kafka_consumer import JsonKafka as Consumer
+from glutemulo.kafka.producer import JsonKafka as Producer
+from glutemulo.kafka.consumer import JsonKafka as Consumer
 
 
 def producer():

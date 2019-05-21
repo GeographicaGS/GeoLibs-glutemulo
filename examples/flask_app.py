@@ -2,7 +2,7 @@
 from flask import Flask
 from flask import request
 
-from kafka_producer import JsonKafka
+from glutemulo.kafka.producer import JsonKafka
 
 
 app = Flask(__name__)
