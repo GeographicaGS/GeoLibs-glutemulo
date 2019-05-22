@@ -2,18 +2,28 @@ import json
 
 from kafka import KafkaProducer
 
-from .avro_utils import FastAvroEncoder
+from glutemulo.config import config
 from glutemulo.errors import ProducerError, SerializerError, ValidationError
 from glutemulo.producer import Producer
+
+from .avro_utils import FastAvroEncoder
 
 
 class Kafka(Producer):
     def __init__(self, topic=None, **producer_config):
+        if not "bootstrap_servers" in producer_config:
+            producer_config["bootstrap_servers"] = config["ingestor_bootstap_servers"]
+        if topic is None:
+            topic = config["ingestor_topic"]
         self.topic = topic
         self.producer = KafkaProducer(**producer_config)
 
+    def produce(self, topic, value, **options):
+        if topic is None:
+            topic = self.topic
+        return super().produce(topic, value, **options)
+
     def send(self, topic, serialized_data):
-        # print(f"{topic} --> {serialized_data}")
         return self.producer.send(topic, serialized_data)
 
 
