@@ -60,9 +60,9 @@ class JsonKafka(Kafka):
             topic,
             None,
             bootstrap_servers,
-            group_id=str(uuid.uuid4()),
-            auto_offset_reset="latest",
-            max_poll_records=500,
+            group_id=group_id,
+            auto_offset_reset=auto_offset_reset,
+            max_poll_records=max_poll_records,
         )
 
     def deserialize(self, message, *extra_options):
@@ -84,7 +84,7 @@ class AvroKafka(Kafka):
             topic,
             FastAvroDecoder(schema_id, schema),
             bootstrap_servers,
-            group_id=str(uuid.uuid4()),
-            auto_offset_reset="latest",
-            max_poll_records=500,
+            group_id=group_id,
+            auto_offset_reset=auto_offset_reset,
+            max_poll_records=max_poll_records,
         )
