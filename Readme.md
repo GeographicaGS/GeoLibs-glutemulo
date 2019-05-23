@@ -11,7 +11,7 @@ and examples.
 
 ### Using producer to upload data to kafka
 
-Se python examples bellow. You must produce a dict with column_mame:value
+See python examples bellow. You must produce a dict with column_mame:value
 
 ### Using the ingestor consumer
 Use `gluto` docker and fill enviroment vars.
