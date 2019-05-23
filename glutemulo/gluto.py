@@ -28,6 +28,9 @@ if __name__ == "__main__":
         config["ingestor_topic"],
         bootstrap_servers=config["ingestor_bootstap_servers"],
         group_id=config["ingestor_group_id"],
+        auto_offset_reset=config["ingestor_auto_offset_reset"],
+        max_poll_records=config["ingestor_max_poll_records"],
+        fetch_min_bytes=config["ingestor_fetch_min_bytes"]
     )
 
     backend = Backend(
@@ -37,6 +40,6 @@ if __name__ == "__main__":
         config["ingestor_dataset_autocreate"],
     )
     while True:
-        for msg in consumer.consume(config["ingestor_wait_interval"]):
-            log.debug(f"Received: {msg}")
-            backend.consume(msg)
+        for messages in consumer.consume(config["ingestor_wait_interval"]):
+            if messages:
+                backend.consume(messages)

@@ -23,8 +23,8 @@ def consumer():
     )
     name = multiprocessing.current_process().name
     while True:
-        for msg in consumer.consume():
-            print(f"{name} - Received: {msg}")
+        for messages in consumer.consume():
+            print(f"{name} - Received: {list(messages)}")
 
 
 if __name__ == "__main__":

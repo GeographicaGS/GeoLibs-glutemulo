@@ -21,10 +21,15 @@ def get_connection():
     return _conn
 
 
-def copy(tablename, rows, delimiter=",", quote='"'):
-    headers = delimiter.join(rows[0])
+def copy(tablename, rows, delimiter=",", quote='"', headers=None):
+    rows = iter(rows)
+    if headers is None:
+        headers = delimiter.join(next(rows))
+    else:
+        headers = delimiter.join(headers)
+
     from_query = f"""COPY {tablename} ({headers}) FROM stdin
-        (FORMAT CSV, DELIMITER '{delimiter}', HEADER true)"""
+        (FORMAT CSV, DELIMITER '{delimiter}', HEADER false)"""
     with get_connection().cursor() as cur:
         try:
             return cur.copy_expert(from_query, _rows_as_file(rows, delimiter, quote))
@@ -68,9 +73,14 @@ def create_table_if_not_exists(tablename, table_definition, table_indexes=""):
 
 
 class PostgresBackend(SQLBackend):
-
     def copy(self, rows, delimiter=",", quote='"'):
-        return copy(self.table_name, rows, delimiter=delimiter, quote=quote)
+        return copy(
+            self.table_name,
+            rows,
+            delimiter=delimiter,
+            quote=quote,
+            headers=self.columns,
+        )
 
     def create_table_if_not_exists(self, tablename, table_definition, table_indexes=""):
         return create_table_if_not_exists(tablename, table_definition, table_indexes)

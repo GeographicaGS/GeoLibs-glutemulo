@@ -29,6 +29,9 @@ with env.prefixed("GLUTEMULO_"):
                 "ingestor_bootstap_servers": env.list("BOOTSTRAP_SERVERS"),
                 "ingestor_group_id": env("GROUP_ID"),
                 "ingestor_wait_interval": env("WAIT_INTERVAL", 0),
+                "ingestor_auto_offset_reset": env("AUTO_OFFSET_RESET", "earliest"),
+                "ingestor_max_poll_records": env.int("MAX_POLL_RECORDS", 500),
+                "ingestor_fetch_min_bytes": env.int("FETCH_MIN_BYTES", 1000),
                 "ingestor_table_ddl_content": env("TABLE_DLL_CONTENT", ""),
                 "ingestor_dataset": env("DATASET", ""),
             }

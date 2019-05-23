@@ -4,20 +4,25 @@ import uuid
 
 from kafka import KafkaConsumer
 
-from .avro_utils import FastAvroDecoder
+from glutemulo.consumer import Consumer
 from glutemulo.errors import SerializerError
+from glutemulo.logger import log
+
+from .avro_utils import FastAvroDecoder
 
 
-class Kafka:
+class Kafka(Consumer):
     def __init__(
         self,
         topic,
-        decoder,
         bootstrap_servers,
         group_id=str(uuid.uuid4()),
-        auto_offset_reset="latest",
+        auto_offset_reset="earliest",
         max_poll_records=500,
+        fetch_min_bytes=1000,
+        **extra_consumer_params,
     ):
+        self.decoder = self.get_decoder()
         self.consumer = KafkaConsumer(
             topic,
             group_id=group_id,
@@ -25,66 +30,40 @@ class Kafka:
             auto_offset_reset=auto_offset_reset,
             consumer_timeout_ms=10000,  # StopIteration if no message after 10sec
             max_poll_records=max_poll_records,
+            fetch_min_bytes=fetch_min_bytes,
+            **extra_consumer_params,
         )
 
-        self.decoder = decoder
-
-    def consume(self, wait_interval=1):
-        """Consume interface.
-           Use multiple consumers in parallel w/ 0.9 kafka brokers
-           Typically you would run each on a different server / process / CPU"""
-        while True:
-            for msg in self._consumer_generator():
-                yield self.deserialize(msg.value)
-                time.sleep(wait_interval)
-
     def _consumer_generator(self):
-        """Driver specific. Consumer generator"""
-        return self.consumer
+        """Driver specific. Consumer generator
+        Here we return a list of dicts"""
+        while True:
+            for _topic, messages in self.consumer.poll().items():
+                yield (msg.value for msg in messages)
 
-    def deserialize(self, message, *extra_options):
+    def deserialize(self, messages, *extra_options):
         """Driver specific. Deerialize data message"""
-        return self.decoder.decode(message)
+        return (self.decoder.decode(msg) for msg in messages)
+
+    def get_decoder(self):
+        raise Exception("Implement this on subclasses!")
+
+
+class JsonDecoder:
+    def decode(self, msg):
+        return json.loads(msg.decode("utf8"))
 
 
 class JsonKafka(Kafka):
-    def __init__(
-        self,
-        topic,
-        bootstrap_servers,
-        group_id=str(uuid.uuid4()),
-        auto_offset_reset="latest",
-        max_poll_records=500,
-    ):
-        super().__init__(
-            topic,
-            None,
-            bootstrap_servers,
-            group_id=group_id,
-            auto_offset_reset=auto_offset_reset,
-            max_poll_records=max_poll_records,
-        )
-
-    def deserialize(self, message, *extra_options):
-        return json.loads(message)
+    def get_decoder(self):
+        return JsonDecoder()
 
 
 class AvroKafka(Kafka):
-    def __init__(
-        self,
-        topic,
-        schema,
-        schema_id,
-        bootstrap_servers,
-        group_id=str(uuid.uuid4()),
-        auto_offset_reset="latest",
-        max_poll_records=500,
-    ):
-        super().__init__(
-            topic,
-            FastAvroDecoder(schema_id, schema),
-            bootstrap_servers,
-            group_id=group_id,
-            auto_offset_reset=auto_offset_reset,
-            max_poll_records=max_poll_records,
-        )
+    def __init__(self, topic, schema, schema_id, **consumer_params):
+        self.schema = schema
+        self.schema_id = schema_id
+        super().__init__(topic, **consumer_params)
+
+    def get_decoder(self):
+        return FastAvroDecoder(self.schema_id, self.schema)

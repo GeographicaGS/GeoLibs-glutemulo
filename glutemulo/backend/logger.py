@@ -5,4 +5,4 @@ class LoggerBackend:
         log.info(f'init({args}, {kwargs})')
 
     def consume(self, msg):
-        log.info(msg)
+        log.warn(msg)

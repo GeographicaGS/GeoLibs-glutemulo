@@ -28,9 +28,10 @@ def consumer():
     )
     name = multiprocessing.current_process().name
     while True:
-        for msg in consumer.consume():
-            print(f"{name} - Received: {msg}")
-            r.set(msg['value'], json.dumps(msg), ex=EXPIRE_SECONDS)
+        for messages in consumer.consume():
+            for msg in messages:
+                print(f"{name} - Received: {msg}")
+                r.set(msg['value'], json.dumps(msg), ex=EXPIRE_SECONDS)
 
 
 if __name__ == "__main__":
