@@ -2,6 +2,56 @@
 
 A HA geo socio demo data ingestor
 
+## Usage
+
+Read de [examples files](examples).
+
+We use environ vars. See [Environ vars file example](.env.example) for complete list,
+and examples.
+
+### Using producer to upload data to kafka
+
+See python examples bellow. You must produce a dict with column_mame:value
+
+### Using the ingestor consumer
+Use `gluto` docker and fill enviroment vars.
+
+Select the backend using `GLUTEMULO_BACKEND` and specific vars for it (database, host, etc).
+You can select 2 backends: `postgres` or `carto`
+See [Environ vars file example](.env.example) for complete list.
+
+Then set:
+
+1. `GLUTEMULO_INGESTOR_DATASET`  
+Table to upload data
+2. `GLUTEMULO_INGESTOR_DATASET_COLUMNS`  
+Comma separted list of column names
+
+Now, create the table on backend or set `GLUTEMULO_INGESTOR_DATASET_DDL` and `GLUTEMULO_INGESTOR_DATASET_AUTOCREATE=False`
+
+Then configure ingestor for kafka.
+First read the [python-kafka doc](https://kafka-python.readthedocs.io/en/master/apidoc/KafkaConsumer.html)
+and then use the following vars:
+
+1. `GLUTEMULO_INGESTOR_TOPIC`  
+Topic to use
+2. `GLUTEMULO_INGESTOR_BOOTSTRAP_SERVERS`  
+List of servers to connect
+3. `GLUTEMULO_INGESTOR_GROUP_ID`  
+Group id.
+4. `GLUTEMULO_INGESTOR_AUTO_OFFSET_RESET`  
+latest or earliest.
+5. `GLUTEMULO_INGESTOR_MAX_POLL_RECORDS`  
+The maximum number of records returned in a batch of messages
+6. `GLUTEMULO_INGESTOR_FETCH_MIN_BYTES`  
+Minimum amount of data the server should return for a fetch request, otherwise wait up to fetch_max_wait_ms for more data to accumulate. Default: 1
+
+For the docker, we include a [example docker-compose file](docker-compose.yml).
+Remember you can scale with same group_id
+
+```bash
+docker-compose scale gluto=3
+```
 
 ## Run flask demo
 
@@ -40,12 +90,13 @@ productor = JsonKafka(bootstrap_servers="localhost:9092")
 future = productor.produce('simple-topic', dict(dos='BB'))
 ```
 
-Consumer:
+Consumer in batches:
 ```python
 from glutemulo.kafka.consumer import JsonKafka
 consumer = JsonKafka('simple-topic', bootstrap_servers="localhost:9092")
 for msg in consumer.consume():
-    print(msg)
+    for msg in messages:
+        print(msg)
 ```
 
 ### Kafka + Avro
@@ -75,8 +126,9 @@ Consumer:
 ```python
 from glutemulo.kafka.consumer import AvroKafka as Consumer
 consumer = Consumer('simple-topic-avro', SCHEMA, SCHEMA_ID, bootstrap_servers="localhost:9092")
-for msg in consumer.consume():
-    print(msg)
+for messages in consumer.consume():
+    for msg in messages:
+        print(msg)
 ```
 
 ## For testing

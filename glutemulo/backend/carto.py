@@ -11,7 +11,7 @@ from glutemulo.logger import log
 
 
 def _get_auth_client():
-    log.info(f"Using {config['carto_api_url']}")
+    log.debug(f"Using {config['carto_api_url']}")
     auth_client = APIKeyAuthClient(
         api_key=config["carto_api_key"], base_url=config["carto_api_url"]
     )
@@ -43,11 +43,16 @@ def query(sql_query, parse_json=True, do_post=True, format=None, retries=5):
     return res
 
 
-def copy(tablename, rows, delimiter=",", quote='"'):
+def copy(tablename, rows, delimiter=",", quote='"', headers=None):
     copy_client = CopySQLClient(_get_auth_client())
-    headers = delimiter.join(rows[0])
+    rows = iter(rows)
+    if headers is None:
+        headers = delimiter.join(next(rows))
+    else:
+        headers = delimiter.join(headers)
+
     from_query = f"""COPY {tablename} ({headers}) FROM stdin
-        (FORMAT CSV, DELIMITER '{delimiter}', HEADER true)"""
+        (FORMAT CSV, DELIMITER '{delimiter}', HEADER false)"""
     try:
         return copy_client.copyfrom(from_query, rows_generator(rows, delimiter, quote))
     except CartoException as e:
@@ -74,7 +79,9 @@ def rows_generator(rows, delimiter, quote):
         )
 
 
-def create_table_if_not_exists(tablename, table_definition, table_indexes="", cartodbfy=True):
+def create_table_if_not_exists(
+    tablename, table_definition, table_indexes="", cartodbfy=True
+):
     tables = map(
         operator.itemgetter("cdb_usertables"), query("SELECT CDB_UserTables()")
     )
@@ -94,9 +101,14 @@ def create_table_if_not_exists(tablename, table_definition, table_indexes="", ca
 
 
 class CartoBackend(SQLBackend):
-
     def copy(self, rows, delimiter=",", quote='"'):
-        return copy(self.table_name, rows, delimiter=delimiter, quote=quote)
+        return copy(
+            self.table_name,
+            rows,
+            delimiter=delimiter,
+            quote=quote,
+            headers=self.columns,
+        )
 
     def create_table_if_not_exists(self, tablename, table_definition, table_indexes=""):
         return create_table_if_not_exists(tablename, table_definition, table_indexes)
