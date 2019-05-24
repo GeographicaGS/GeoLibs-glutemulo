@@ -5,15 +5,14 @@ import logging
 env = Env()
 
 with env.prefixed("GLUTEMULO_"):
-    backend = env("BACKEND", default="carto")
+    backend = env("BACKEND", default=None)
     config = {
         "backend": backend,
-        "debug": env.bool("DEBUG", False),
         "log_level": getattr(
             logging,
             env.str(
                 "LOG_LEVEL",
-                logging.INFO,
+                "INFO",
                 validate=OneOf(
                     "DEBUG INFO WARN ERROR".split(),
                     error="LOG_LEVEL must be one of: {choices}",
@@ -22,30 +21,32 @@ with env.prefixed("GLUTEMULO_"):
         ),
     }
 
+    ingestor_enabled = config['ingestor_enabled'] = env.bool("INGESTOR_ENABLED", False)
     with env.prefixed("INGESTOR_"):
-        config.update(
-            {
-                "ingestor_topic": env("TOPIC", None),
-                "ingestor_bootstap_servers": env.list("BOOTSTRAP_SERVERS"),
-                "ingestor_group_id": env("GROUP_ID"),
-                "ingestor_wait_interval": env("WAIT_INTERVAL", 0),
-                "ingestor_auto_offset_reset": env("AUTO_OFFSET_RESET", "earliest"),
-                "ingestor_max_poll_records": env.int("MAX_POLL_RECORDS", 500),
-                "ingestor_fetch_min_bytes": env.int("FETCH_MIN_BYTES", 1000),
-                "ingestor_table_ddl_content": env("TABLE_DLL_CONTENT", ""),
-                "ingestor_dataset": env("DATASET", ""),
-            }
-        )
-        with env.prefixed("DATASET_"):
+        if ingestor_enabled:
             config.update(
                 {
-                    "ingestor_dataset_columns": env.list("COLUMNS", []),
-                    "ingestor_dataset_ddl": env("DLL", ""),
-                    "ingestor_dataset_autocreate": env.bool("AUTOCREATE", False),
+                    "ingestor_topic": env("TOPIC", None),
+                    "ingestor_bootstap_servers": env.list("BOOTSTRAP_SERVERS"),
+                    "ingestor_group_id": env("GROUP_ID"),
+                    "ingestor_wait_interval": env("WAIT_INTERVAL", 0),
+                    "ingestor_auto_offset_reset": env("AUTO_OFFSET_RESET", "earliest"),
+                    "ingestor_max_poll_records": env.int("MAX_POLL_RECORDS", 500),
+                    "ingestor_fetch_min_bytes": env.int("FETCH_MIN_BYTES", 1000),
+                    "ingestor_table_ddl_content": env("TABLE_DLL_CONTENT", ""),
+                    "ingestor_dataset": env("DATASET", ""),
                 }
             )
+            with env.prefixed("DATASET_"):
+                config.update(
+                    {
+                        "ingestor_dataset_columns": env.list("COLUMNS", []),
+                        "ingestor_dataset_ddl": env("DLL", ""),
+                        "ingestor_dataset_autocreate": env.bool("AUTOCREATE", False),
+                    }
+                )
 
-    if backend == "carto":
+    if backend == "carto" and ingestor_enabled:
         with env.prefixed("CARTO_"):
             config.update(
                 {
@@ -58,7 +59,7 @@ with env.prefixed("GLUTEMULO_"):
             if not api_url:
                 api_url = f"https://{env('USER')}.carto.com"
             config["carto_api_url"] = api_url
-    elif backend == "postgres":
+    elif backend == "postgres" and ingestor_enabled:
         with env.prefixed("PG_"):
             postgres_uri = env("URI", None)
             if not postgres_uri:

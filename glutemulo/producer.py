@@ -1,4 +1,4 @@
-from glutemulo.errors import SerializerError
+from glutemulo.errors import SerializerError, ProducerError
 
 
 class Producer:
@@ -16,5 +16,4 @@ class Producer:
         raise SerializerError("Implement this!")
 
     def send(self, topic, data):
-        pass
-
+        raise ProducerError("Implement this!")

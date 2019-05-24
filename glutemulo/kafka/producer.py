@@ -1,10 +1,10 @@
 import json
 
-from kafka import KafkaProducer
-
 from glutemulo.config import config
-from glutemulo.errors import ProducerError, SerializerError, ValidationError
+from glutemulo.errors import ProducerError, SerializerError
 from glutemulo.producer import Producer
+from kafka import KafkaProducer
+from kafka.errors import KafkaError
 
 from .avro_utils import FastAvroEncoder
 
@@ -24,7 +24,10 @@ class Kafka(Producer):
         return super().produce(topic, value, **options)
 
     def send(self, topic, serialized_data):
-        return self.producer.send(topic, serialized_data)
+        try:
+            return self.producer.send(topic, serialized_data)
+        except KafkaError as error:
+            raise ProducerError(f"Kafka error: {error.args[0]}")
 
 
 class JsonKafka(Kafka):
