@@ -21,7 +21,7 @@ with env.prefixed("GLUTEMULO_"):
         ),
     }
 
-    ingestor_enabled = config['ingestor_enabled'] = env.bool("INGESTOR_ENABLED", False)
+    ingestor_enabled = config["ingestor_enabled"] = env.bool("INGESTOR_ENABLED", False)
     with env.prefixed("INGESTOR_"):
         if ingestor_enabled:
             config.update(
@@ -75,3 +75,17 @@ with env.prefixed("GLUTEMULO_"):
                 config[
                     "postgres_uri"
                 ] = f'host={env("HOST")} port={env("PORT")} dbname={env("DBNAME")} user={env("USER")} password={env("PASSWORD")}'
+    elif backend == "redis" and ingestor_enabled:
+        with env.prefixed("REDIS_"):
+            config.update(
+                {
+                    "redis_expire_seconds": env.int("EXPIRE_SECONDS", 15 * 60),
+                    "redis_key_prefix": env("KEY_PREFIX", "gluto:"),
+                    "redis_connection": {
+                        "host": env.str("HOST", "redis"),
+                        "port": env.int("PORT", 6379),
+                        "password": env.str("PASSWORD", None),
+                        "db": env.int("DB", 0),
+                    },
+                }
+            )
