@@ -20,6 +20,9 @@ else:
 
 
 if __name__ == "__main__":
+    if not config["ingestor_enabled"]:
+        log.error("Disabled. Please set GLUTEMULO_INGESTOR_ENABLED")
+        sys.exit(1)
     if not config["ingestor_topic"]:
         log.error("No topic found. Please set GLUTEMULO_INGESTION_TOPIC")
         sys.exit(1)
