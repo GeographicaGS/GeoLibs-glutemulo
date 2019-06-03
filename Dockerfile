@@ -27,7 +27,7 @@ RUN set -ex ; \
     apt-get install -y --no-install-recommends \
       $BUILD_DEPS ; \
     pip install "poetry==$POETRY_VERSION" ; \
-    # poetry config settings.virtualenvs.create false ; \
+    poetry config settings.virtualenvs.create false ; \
     poetry completions bash > /etc/bash_completion.d/poetry.bash-completion ; \
     poetry install --no-interaction --no-ansi $POETRY_EXTRA ; \
     apt-get remove -y --purge $BUILD_DEPS ; \
