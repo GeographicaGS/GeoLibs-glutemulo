@@ -33,6 +33,8 @@ steps:
       registry: eu.gcr.io
       json_key:
         from_secret: google_credentials
+      build_args:
+        - ENVIRONMENT=test
       cache_from:
         - eu.gcr.io/habichuelas/cicd/geolibs/glutemulo:${DRONE_COMMIT_BRANCH//\//__}
         - eu.gcr.io/habichuelas/cicd/geolibs/glutemulo:master
