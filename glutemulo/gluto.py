@@ -17,6 +17,10 @@ elif config["backend"] == "redis":
     from glutemulo.backend.redis import RedisBackend
 
     log.debug("Using REDIS backend")
+elif config["backend"] == "big_query":
+    from glutemulo.backend.big_query import BigQueryBackend
+
+    log.debug("Using Big Query backend")
 else:
     from glutemulo.backend.logger import LoggerBackend as Backend
 
@@ -45,6 +49,13 @@ if __name__ == "__main__":
             config["redis_expire_seconds"],
             config["redis_key_prefix"],
             **config["redis_connection"],
+        )
+    elif config["backend"] == "big_query":
+        backend = BigQueryBackend(
+            config["bq_project"],
+            config["bq_dataset"],
+            config["bq_table"],
+            []
         )
     else:
 

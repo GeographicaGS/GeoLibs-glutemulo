@@ -89,3 +89,12 @@ with env.prefixed("GLUTEMULO_"):
                     },
                 }
             )
+    elif backend == "big_query" and ingestor_enabled:
+        with env.prefixed("BQ_"):
+            config.update(
+                {
+                    "bq_project": env.str("PROJECT", "project"),
+                    "bq_dataset": env.str("DATASET", "gluto"),
+                    "bq_table": env.str("TABLE", "log"),
+                }
+            )
