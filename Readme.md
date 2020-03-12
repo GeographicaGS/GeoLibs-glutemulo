@@ -82,12 +82,22 @@ DATA Received
 
 ### Kafka + json
 
-Async producer:
+Sync producer:
 
 ```python
 from glutemulo.kafka.producer import JsonKafka
 productor = JsonKafka(bootstrap_servers="localhost:9092")
 future = productor.produce('simple-topic', dict(dos='BB'))
+```
+
+Async producer:
+
+```python
+from glutemulo.kafka.async_producer import AsyncJsonKafka
+import asyncio
+loop = asyncio.get_event_loop()
+productor = AsyncJsonKafka(loop, bootstrap_servers="localhost:9092")
+future = await productor.produce('simple-topic', dict(dos='BBF'))
 ```
 
 Consumer in batches:

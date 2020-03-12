@@ -17,7 +17,8 @@ fastavro = "^0.21.23"
 carto = {version = "^1.4",optional = true}
 psycopg2-binary = {version = "^2.8",optional = true}
 redis = {version = "^3.2",optional = true}
-google-cloud-bigquery = "^1.21"
+google-cloud-bigquery = {version = "^1.21", optional = true}
+aiokafka = {version = "^0.5.2", optional = true}
 
 [tool.poetry.dev-dependencies]
 flask = "^1.0"
@@ -28,6 +29,8 @@ pytest-mock = "^1.10"
 carto = ["carto"]
 postgres = ["psycopg2-binary"]
 redis = ["redis"]
+google-cloud-bigquery = ["google-cloud-bigquery"]
+aiokafka = ["aiokafka"]
 
 [build-system]
 requires = ["poetry>=0.12"]
