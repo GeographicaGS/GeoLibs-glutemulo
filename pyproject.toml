@@ -18,6 +18,7 @@ carto = {version = "^1.4",optional = true}
 psycopg2-binary = {version = "^2.8",optional = true}
 redis = {version = "^3.2",optional = true}
 google-cloud-bigquery = "^1.21"
+aiokafka = {version = "^0.5.2", optional = true}
 
 [tool.poetry.dev-dependencies]
 flask = "^1.0"
