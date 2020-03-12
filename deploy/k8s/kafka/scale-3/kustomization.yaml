@@ -3,7 +3,7 @@ kind: Kustomization
 
 bases:
   # https://github.com/kubernetes-sigs/kustomize/blob/master/docs/kustomization.yaml
-  - github.com/Yolean/kubernetes-kafka/variants/scale-1?ref=v6.0.3
+  - github.com/Yolean/kubernetes-kafka/variants/scale-3-5-nopzoo?ref=v6.0.3
 
   # If you found rbac permissions problems use this: ../../rbac-admin.yaml
 
