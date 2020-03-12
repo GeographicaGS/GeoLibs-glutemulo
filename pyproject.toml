@@ -3,7 +3,7 @@ name = "geolibs-glutemulo"
 packages = [
     { include='glutemulo' }
 ]
-version = "0.1.3"
+version = "0.2.0.dev1"
 description = "GeoLibs data ingestor"
 authors = ["Geographica <hello@geographica.com>"]
 license = "MIT"
