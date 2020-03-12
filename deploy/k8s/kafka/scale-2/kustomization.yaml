@@ -1,0 +1,36 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+bases:
+  # https://github.com/kubernetes-sigs/kustomize/blob/master/docs/kustomization.yaml
+  - github.com/Yolean/kubernetes-kafka/variants/scale-2?ref=v6.0.3
+
+  # If you found rbac permissions problems use this: ../../rbac-admin.yaml
+
+patchesJson6902:
+  - target:
+      group: apps
+      version: v1
+      kind: StatefulSet
+      name: kafka
+    path: kafka-topics-override.json
+
+  # Other configs
+  - target:
+      group: apps
+      version: v1
+      kind: StatefulSet
+      name: kafka
+    path: _base/kafka-resources-override.json
+  - target:
+      group: apps
+      version: v1
+      kind: StatefulSet
+      name: pzoo
+    path: _base/pzoo-resources-override.json
+  - target:
+      group: apps
+      version: v1
+      kind: StatefulSet
+      name: zoo
+    path: _base/zoo-resources-override.json
