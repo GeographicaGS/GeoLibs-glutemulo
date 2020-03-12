@@ -455,6 +455,8 @@ version = "0.15.4"
 carto = ["carto"]
 postgres = ["psycopg2-binary"]
 redis = ["redis"]
+google-cloud-bigquery = ["google-cloud-bigquery"]
+aiokafka = ["aiokafka"]
 
 [metadata]
 content-hash = "74a4cca234f3bf7164a74c3c3061fae9b45047302d644cc133b92aae07c12a28"

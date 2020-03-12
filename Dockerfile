@@ -19,9 +19,9 @@ COPY . .
 
 RUN set -ex ; \
     if [ $ENVIRONMENT = "local" ] || [ $ENVIRONMENT = "test" ]  ; then \
-      POETRY_EXTRA="-E carto -E postgres -E redis" ; \
+      POETRY_EXTRA="-E carto -E postgres -E redis -E google-cloud-bigquery -E aiokafka" ; \
     else \
-      POETRY_EXTRA="-E carto -E postgres -E redis --no-dev" ; \
+      POETRY_EXTRA="-E carto -E postgres -E redis -E google-cloud-bigquery -E aiokafka --no-dev" ; \
     fi ; \
     apt-get update ; \
     apt-get install -y --no-install-recommends \
